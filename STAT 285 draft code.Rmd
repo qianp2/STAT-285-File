@@ -1,0 +1,60 @@
+---
+title: "STAT 285 draft code"
+author: "Peter Qian"
+date: "2024-11-05"
+output: html_document
+---
+
+```{r}
+library(readr)
+cric_test <- read_csv("Desktop/Statistics/statistical consulting/2024.11.05 draft result.csv")
+```
+
+```{r}
+unique(cric_test$Q16)
+demographics <- c("Staff", "Faculty", "Student", "Alumni")
+cric_test$Q16 <- str_split(cric_test$Q16, ","
+```
+
+
+```{r}
+student_group <-
+  cric_test %>%
+  filter(Q16 == "Student")
+
+faculty_group <-
+  cric_test %>%
+  filter(Q16 == "Alumni")
+
+staff_group <-
+  cric_test %>%
+  filter(Q16 =="Staff")
+
+alumni_group <-
+  cric_test %>%
+  filter(Q16 == "Alumni")
+```
+
+```{r}
+# plotting function
+plot_stacked_bar <- function(data, question_num) {
+  plot_data <- data %>%
+    unnest(Q16) %>%
+    filter(Q16 %in% demographics) %>%
+    group_by(Q16, .data[[question_num]]) %>%
+    summarise(count = n(), .groups = "drop") %>%
+    group_by(Q16) %>%
+    mutate(percentage = count / sum(count) * 100)
+  
+  ggplot(plot_data, aes(x = Q16, y = percentage, fill = .data[[question_num]])) +
+    geom_bar(stat = "identity", position = "stack") +
+    labs(x = "Demographics", y = "Percentage", fill = paste("Responses to", question_num)) +
+    theme_minimal() +
+    scale_y_continuous(labels = scales::percent_format(scale = 1))
+}
+```
+
+```{r}
+# Q1 demographics
+plot_stacked_bar(cric_test, "Q1")
+```
